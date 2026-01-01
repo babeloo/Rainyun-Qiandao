@@ -1,0 +1,39 @@
+name: Sync Upstream
+
+permissions:
+  contents: write
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # 每天 UTC 0点 (北京时间 8点) 运行一次
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  sync_latest_from_upstream:
+    name: Sync latest commits from upstream repo
+    runs-on: ubuntu-latest
+    if: github.repository != 'fatekey/Rainyun-Qiandao'
+
+    steps:
+      # 第一步：检出仓库
+      - name: Checkout target repo
+        uses: actions/checkout@v4
+
+      # 第二步：同步上游更改
+      - name: Sync upstream changes
+        id: sync
+        uses: a202111/fork-sync@v1.6.3
+        with:
+          upstream_repository: fatekey/Rainyun-Qiandao
+          target_branch: main
+          upstream_branch: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # 第三步：检查同步结果
+      - name: Check for new commits
+        if: steps.sync.outputs.has_new_commits == 'true'
+        run: echo "Successfully synced new commits from upstream."
+
+      - name: No new commits
+        if: steps.sync.outputs.has_new_commits == 'false'
+        run: echo "No new commits found from upstream."
