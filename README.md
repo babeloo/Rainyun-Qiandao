@@ -3,6 +3,10 @@
 https://github.com/SerendipityR-2022/Rainyun-Qiandao 的 docker 版，在 arm 和 amd64 平台均可运行
 
 
+## GitHub Actions 自动构建镜像
+
+推送到 `main/master` 或打 `v*` 标签时，会自动构建 Docker 镜像并推送到 GHCR（`ghcr.io/<owner>/<repo>`）。
+
 ## 食用方法
 
 ### 快速开始
