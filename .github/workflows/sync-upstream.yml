@@ -15,25 +15,14 @@ jobs:
     if: github.repository != 'fatekey/Rainyun-Qiandao'
 
     steps:
-      # 第一步：检出仓库
       - name: Checkout target repo
         uses: actions/checkout@v4
-
-      # 第二步：同步上游更改
-      - name: Sync upstream changes
-        id: sync
-        uses: a202111/fork-sync@v1.6.3
         with:
-          upstream_repository: fatekey/Rainyun-Qiandao
-          target_branch: main
-          upstream_branch: main
-          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0 # 必须设置为 0 以获取所有历史记录进行同步
 
-      # 第三步：检查同步结果
-      - name: Check for new commits
-        if: steps.sync.outputs.has_new_commits == 'true'
-        run: echo "Successfully synced new commits from upstream."
-
-      - name: No new commits
-        if: steps.sync.outputs.has_new_commits == 'false'
-        run: echo "No new commits found from upstream."
+      - name: Sync upstream changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 使用 GitHub CLI 同步上游
+          gh repo sync ${{ github.repository }} -b main
